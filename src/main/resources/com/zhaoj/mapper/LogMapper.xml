@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhaoj.log.dao.LogDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zhaoj.log.entity.Log">
+        <id column="id" property="id" />
+        <result column="username" property="username" />
+        <result column="operaction_at" property="operactionAt" />
+        <result column="table_name" property="tableName" />
+        <result column="operation_method" property="operationMethod" />
+        <result column="method_name" property="methodName" />
+        <result column="data_id" property="dataId" />
+        <result column="data_info" property="dataInfo" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, username, operaction_at, table_name, operation_method, method_name, data_id, data_info
+    </sql>
+
+</mapper>

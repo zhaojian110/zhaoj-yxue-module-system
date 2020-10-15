@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhaoj.dao.CommentDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zhaoj.entity.Comment">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="source_id" property="sourceId" />
+        <result column="content" property="content" />
+        <result column="create_at" property="createAt" />
+        <result column="interact_id" property="interactId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, user_id, source_id, content, create_at, interact_id
+    </sql>
+
+
+    <resultMap id="commap" type="com.zhaoj.entity.Comment">
+        <id column="cid" property="id"/>
+        <result column="cuser" property="userId"/>
+        <result column="csource" property="sourceId"/>
+        <result column="ccon" property="content"/>
+        <result column="ccreate" property="createAt"/>
+        <result column="cinteract" property="interactId"/>
+        <!--property是实体类中的字段-->
+        <association property="user" javaType="com.zhaoj.entity.User">
+            <result column="username" property="username"/>
+        </association>
+        <association property="video" javaType="com.zhaoj.entity.Video">
+            <result column="vicover" property="coverUrl"/>
+        </association>
+        <association property="img" javaType="com.zhaoj.entity.Img">
+            <result column="iurl" property="imgUrl"/>
+        </association>
+    </resultMap>
+    <select id="queryAllFirst" resultMap="commap">
+        select
+            co.id cid,
+            co.user_id cuser,
+            co.source_id csource,
+            co.content ccon,
+            co.create_at ccreate,
+            co.interact_id cinteract,
+            u.username username,
+            vi.cover_url vicover,
+            i.img_url iurl
+        from yx_comment co
+                 left join yx_user u
+                           on co.user_id = u.id
+                 left join yx_video vi
+                           on co.source_id= vi.id
+                 left join yx_img i
+                           on co.source_id=i.id
+            where co.interact_id is null
+                  group by co.source_id
+        limit #{start},#{rows}
+    </select>
+    <select id="queryAllDouble" resultMap="commap">
+        select
+            co.id cid,
+            co.user_id cuser,
+            co.source_id csource,
+            co.content ccon,
+            co.create_at ccreate,
+            co.interact_id cinteract,
+            u.username username,
+            vi.cover_url vicover,
+            i.img_url iurl
+        from yx_comment co
+                 left join yx_user u
+                           on co.user_id = u.id
+                 left join yx_video vi
+                           on co.source_id= vi.id
+                 left join yx_img i
+                           on co.source_id=i.id
+        where co.interact_id =#{interact}
+            limit #{start},#{rows}
+    </select>
+
+    <select id="queryAllInter"  resultType="com.zhaoj.entity.Comment">
+        select * from yx_comment
+    </select>
+
+</mapper>

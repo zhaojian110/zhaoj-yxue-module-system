@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zhaoj.dao.VideoDao">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.zhaoj.entity.Video">
+        <id column="id" property="id" />
+        <result column="title" property="title" />
+        <result column="intro" property="intro" />
+        <result column="cover_url" property="coverUrl" />
+        <result column="video_url" property="videoUrl" />
+        <result column="create_at" property="createAt" />
+        <result column="user_id" property="userId" />
+        <result column="cid" property="cid" />
+        <result column="grp_id" property="grpId" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        id, title, intro, cover_url, video_url, create_at, user_id, cid, grp_id
+    </sql>
+    <!--表连接查询 查询视频表中的所有连接关系-->
+    <resultMap id="videoMap" type="com.zhaoj.entity.Video">
+        <!--colum是底部查询的字段(自定义),property是对应的实体类-->
+        <id column="vid" property="id"/><!--id-->
+        <result column="vtitle" property="title"/><!--标题-->
+        <result column="vintro" property="intro"/><!--简介-->
+        <result column="vcover" property="coverUrl"/><!--封面-->
+        <result column="vvideo" property="videoUrl"/><!--地址-->
+        <result column="vcreate" property="createAt"/><!--发布时间-->
+        <result column="vuser" property="userId"/><!--用户编号-->
+        <result column="vcid" property="cid"/><!--类别编号-->
+        <result column="vgrp" property="grpId"/><!--分组编号-->
+        <result column="cou" property="cou"/><!--数量-->
+        <!--property是实体类中的字段-->
+        <association property="user" javaType="com.zhaoj.entity.User">
+            <id column="usid" property="id"></id>
+            <result column="usname" property="username"/>
+            <result column="ushead" property="headShow"/>
+        </association>
+        <association property="category" javaType="com.zhaoj.entity.Category">
+            <id column="caid" property="id"/>
+            <result column="caname" property="name"/>
+        </association>
+        <association property="group" javaType="com.zhaoj.entity.Group">
+            <result column="gname" property="name"/>
+        </association>
+        <association property="play" javaType="com.zhaoj.entity.Play">
+            <result column="pnum" property="playNum"/>
+        </association>
+    </resultMap>
+    <!--查询视频展示表-->
+    <select id="queryAll" resultMap="videoMap">
+        select
+            vi.id vid,
+            vi.title vtitle,
+            vi.intro vintro,
+            vi.cover_url vcover,
+            vi.video_url vvideo,
+            vi.create_at vcreate,
+            vi.user_id vuser,
+            vi.cid vcid,
+            vi.grp_id vgrp,
+            us.username usname,
+            ca.name caname,
+            ca.id caid,
+            gr.name gname,
+            pl.play_num pnum,
+            count(*) cou
+        from yx_video vi
+                 left join yx_user us
+                           on vi.user_id = us.id
+                 left join yx_category ca
+                           on vi.cid=ca.id
+                 left join yx_group gr
+                           on vi.grp_id = gr.id
+                 left join yx_play pl
+                           on vi.id = pl.video_id
+                 left join yx_like li
+                           on vi.id = li.source_id
+        group by vi.id
+        order by cou desc
+        limit #{start},#{rows}
+    </select>
+    <select id="queryAl" resultMap="videoMap">
+        select
+            vi.id vid,
+            vi.title vtitle,
+            vi.intro vintro,
+            vi.cover_url vcover,
+            vi.video_url vvideo,
+            vi.create_at vcreate,
+            vi.user_id vuser,
+            vi.cid vcid,
+            vi.grp_id vgrp,
+            us.id usid,
+            us.username usname,
+            ca.id caid,
+            ca.name caname,
+            gr.name gname,
+            pl.play_num pnum,
+            count(*) cou
+        from yx_video vi
+                 left join yx_user us
+                           on vi.user_id = us.id
+                 left join yx_category ca
+                           on vi.cid=ca.id
+                 left join yx_group gr
+                           on vi.grp_id = gr.id
+                 left join yx_play pl
+                           on vi.id = pl.video_id
+                 left join yx_like li
+                           on vi.id = li.source_id
+        group by vi.id
+        order by cou desc
+    </select>
+
+    <select id="queryByLikeVideoName" resultMap="videoMap">
+        select
+            vi.id vid,
+            vi.title vtitle,
+            vi.intro vintro,
+            vi.cover_url vcover,
+            vi.video_url vvideo,
+            vi.create_at vcreate,
+            vi.user_id vuser,
+            vi.cid vcid,
+            vi.grp_id vgrp,
+            us.username usname,
+            ca.name caname,
+            ca.id caid,
+            gr.name gname,
+            pl.play_num pnum,
+            count(*) cou
+        from yx_video vi
+                 left join yx_user us
+                           on vi.user_id = us.id
+                 left join yx_category ca
+                           on vi.cid=ca.id
+                 left join yx_group gr
+                           on vi.grp_id = gr.id
+                 left join yx_play pl
+                           on vi.id = pl.video_id
+                 left join yx_like li
+                           on vi.id = li.source_id
+        where vi.title like '%${content}%'
+        group by vi.id
+        order by cou desc
+    </select>
+    <select id="queryByVideoDetail" resultMap="videoMap">
+        select
+            vi.id vid,
+            vi.title vtitle,
+            vi.intro vintro,
+            vi.cover_url vcover,
+            vi.video_url vvideo,
+            vi.create_at vcreate,
+            vi.user_id vuser,
+            vi.cid vcid,
+            vi.grp_id vgrp,
+            us.username usname,
+            ca.name caname,
+            ca.id caid,
+            gr.name gname,
+            pl.play_num pnum,
+            us.id usid,
+            us.head_show ushead,
+            count(*) cou
+        from yx_video vi
+                 left join yx_user us
+                           on vi.user_id = us.id
+                 left join yx_category ca
+                           on vi.cid=ca.id
+                 left join yx_group gr
+                           on vi.grp_id = gr.id
+                 left join yx_play pl
+                           on vi.id = pl.video_id
+                 left join yx_like li
+                           on vi.id = li.source_id
+        <where>
+            vi.id = #{videoId}
+            <if test="cateId!=null and cateId!=''">and vi.cid =#{cateId}</if>
+            <if test="userId!=null and userId!=''">and vi.user_id=#{userId}</if>
+        </where>
+
+    </select>
+    <select id="queryByES" resultType="com.zhaoj.entity.Video">
+        select * from yx_video
+    </select>
+
+</mapper>
