@@ -5,12 +5,9 @@ import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.After;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import javax.annotation.Resource;
@@ -34,20 +31,15 @@ public class CacheAspect {
         //String String
         //String Hash
         //KEY(类名)  key(方法名+实参),value（数据）
-
         //序列化解决乱码
         StringRedisSerializer serializer = new StringRedisSerializer();
         redisTemplate.setKeySerializer(serializer);
         redisTemplate.setHashKeySerializer(serializer);
-
         //设置key value
-
         //key=类名+方法名+实参
         StringBuilder sb = new StringBuilder();
-
         //获取类的全限定名   KEY
         String className = proceedingJoinPoint.getTarget().getClass().getName();
-
         //方法名
         String methodName = proceedingJoinPoint.getSignature().getName();
         sb.append(methodName);
